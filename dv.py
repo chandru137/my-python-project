@@ -1,12 +1,14 @@
 import pandas as pd
 import matplotlib.pyplot as plt 
 import seaborn as sns
-df=pd.read_excel('Project-Management-Sample-Data.xlsx')
+#df=pd.read_excel('Project-Management-Sample-Data.xlsx')
 #plt.plot(df["Days Required"],df["Progress"],marker='s')            #squre shape
 #plt.plot(df["Days Required"],df["Progress"],marker='d')            #diamend shape
 #plt.plot(df["Days Required"],df["Progress"],marker='^')            #up symbol shape
 #plt.plot(df["Days Required"],df["Progress"],marker='*')            #star shape
 #plt.plot(df["Days Required"],df["Progress"],marker='.')            #point shape
+#plt.plot(df["Days Required"],df["Progress"],marker='H')             #Hexagonal
+#plt.plot(df["Days Required"],df["Progress"],marker='2')
 # plt.plot(
 #     df["Days Required"],df["Progress"],marker='o',
 #     markersize=10,                                                  #size of the shape
@@ -16,7 +18,7 @@ df=pd.read_excel('Project-Management-Sample-Data.xlsx')
 # plt.title("Task report")                                           #title of the graph📈
 # plt.xlabel("Days Required")                                        #X-axies
 # plt.ylabel("Progress")                                             #Y-axies
-# plt.show()
+# plt.show()                                                         #show the graph
 #=======================================================================
 #                                      BAR CHART                           #📊
 #=======================================================================

@@ -31,13 +31,13 @@ X=[[1],[2],[3],[4],[5]]        #student study hours
 Y=[35,42,50,61,70]              #obtained marks                 
 model = LinearRegression()
 model.fit(X,Y)
-q=float(input("Enter Your Study hours Per Day:"))  #user input
+q=float(input("Enter Your Study hours Per Day:"))                        #user input
 if q<=24:
  x_pred=model.predict([[q]])       #type:ignore (ignore the type)        #user predection
- x_line=model.predict([[1],[24]])     # type: ignore                     #line in the graph 
- plt.scatter([1,2,3,4,5],Y,color='blue',label='Data')                    #points of data
+ x_line=model.predict([[1],[q]])     # type: ignore                     #line in the graph 
+ plt.scatter([1,2,3,4,5],Y,color='blue',marker='H',label='Data')         #points of data
 
- plt.plot([1,24],x_line,color='red',label='line')                        #line of the graph 
+ plt.plot([1,q],x_line,color='red',label='line')                        #line of the graph 
 
  plt.scatter([q],x_pred,color='green',marker='*',label='Predection')    #predected data
 
@@ -91,9 +91,9 @@ x=[
 y=[30,45,60,75]                   #target values (house prices)
 model=LinearRegression()
 model.fit(x,y)
-p=int(input("Enter The Squarefit:"))
-q=int(input("Enter The Bedrooms:"))
-z=model.predict([[p,q]]) #type:ignore
+a=int(input("Enter The Squarefit:"))
+b=int(input("Enter The Bedrooms:"))
+z=model.predict([[a,b]]) #type:ignore
 print(z)
 '''======================================================================================================================
 c--polynomial regression:it is a type of regression analysis in which the relationship between the independent variable x 
@@ -112,15 +112,16 @@ imag.show()
 
 from sklearn.preprocessing import PolynomialFeatures
 from sklearn.linear_model import LinearRegression
-X=[[1],[2],[3],[4],[5]]                    #study hours
-y=[20,35,55,78,95]                         #student marks
+c=[[1],[2],[3],[4],[5]]                    #study hours
+d=[20,35,55,78,95]                         #student marks
 poly=PolynomialFeatures(degree=2)          #degree of polynomial it means y=b0+b1x+b2x^2
-x_poly=poly.fit_transform(X) #type:ignore      #original x[1,2,3,4,5] it transform to [[1,1,1],[1,2,4],[1,3,9],[1,4,16],[1,5,25]] it means [x^0,x^1,x^2]
+x_poly=poly.fit_transform(c) #type:ignore      #original x[1,2,3,4,5] it transform to [[1,1,1],[1,2,4],[1,3,9],[1,4,16],[1,5,25]] it means [x^0,x^1,x^2]
 model=LinearRegression()                  
-model.fit(x_poly,y)
-q=int(input("Enter The Study Hours:"))
-prediction=model.predict(poly.transform([[q]]))
+model.fit(x_poly,d)
+e=int(input("Enter The Study Hours:"))
+prediction=model.predict(poly.transform([[e]]))
 print(prediction)
+
 '''maths solution: y=b0+b1x+b2x^2
 x=[1,2,3,4,5] y=[20,35,55,78,95]
 to find b0,b1,b2 we use the formula b=(X^T*X)^-1*X^T*y
