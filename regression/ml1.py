@@ -82,6 +82,7 @@ b--multiple linear regression multiple input feature ex( predecting house price)
 ================================================================================================================'''
 
 from sklearn.linear_model import LinearRegression
+from sklearn.metrics import mean_absolute_error,mean_squared_error,r2_score
 x=[
     [1000,2],                      #1000 sqft 2 bedrooms
     [1500,3],                      #1500 sqft 3 bedrooms
@@ -91,10 +92,16 @@ x=[
 y=[30,45,60,75]                   #target values (house prices)
 model=LinearRegression()
 model.fit(x,y)
+
+y_pred=model.predict(x)            #predication for traning the data->for metrics
+print("predication:",y_pred)             
+print("MAE:",mean_absolute_error(y,y_pred))   #finding the of MAE,MSE,R2
+print("MSE:",mean_squared_error(y,y_pred))    #MAE and MSE  e- show error is not 
+print("R2:",r2_score(y,y_pred))              #R2=1 perfect fit
+
 a=int(input("Enter The Squarefit:"))
 b=int(input("Enter The Bedrooms:"))
 z=model.predict([[a,b]]) #type:ignore
-print(z)
 '''======================================================================================================================
 c--polynomial regression:it is a type of regression analysis in which the relationship between the independent variable x 
 and the dependent variable y is modelled as an nth degree polynomial.
@@ -104,23 +111,40 @@ and the dependent variable y is modelled as an nth degree polynomial.
 linear regression                polynomial regression
 y=mx+c                           y=b0+b1x+b2x^2+......+
 '''
+
 from PIL import Image                              #image processing library install by pip install pillow
 imag=Image.open("images.jpg")                      #the image show the difference between linear and polynomial regression
-imag.show()                                         
+imag.show()                                      
 
 
 
 from sklearn.preprocessing import PolynomialFeatures
-from sklearn.linear_model import LinearRegression
+from sklearn.linear_model import LinearRegression    #polynomialfeatures and linearregression work together in polynomialfeatures 
+import matplotlib.pyplot as plt
+import numpy as np
 c=[[1],[2],[3],[4],[5]]                    #study hours
 d=[20,35,55,78,95]                         #student marks
-poly=PolynomialFeatures(degree=2)          #degree of polynomial it means y=b0+b1x+b2x^2
-x_poly=poly.fit_transform(c) #type:ignore      #original x[1,2,3,4,5] it transform to [[1,1,1],[1,2,4],[1,3,9],[1,4,16],[1,5,25]] it means [x^0,x^1,x^2]
+poly=PolynomialFeatures(degree=2)          #degree of polynomial it means y=b0+b1x+b2x^2(general formula y=b0+b1x+b2x^2+......+bnx^n)
+x_poly=poly.fit_transform(c) #type:ignore  #original x[1,2,3,4,5] it transform to [[1,1,1],[1,2,4],[1,3,9],[1,4,16],[1,5,25]] it means [x^0,x^1,x^2](general formula [x^0,x^1,x^2,......,x^n])
 model=LinearRegression()                  
 model.fit(x_poly,d)
 e=int(input("Enter The Study Hours:"))
 prediction=model.predict(poly.transform([[e]]))
-print(prediction)
+x_graph=np.linspace(1,6,100).reshape(-1,1)      
+x_graph_poly=poly.transform(x_graph)
+y_graph=model.predict(x_graph_poly)
+plt.scatter(c,d,label="Actual Data")
+
+plt.plot(x_graph,y_graph,label="Polynomial Regression")
+
+plt.xlabel("Study Hours")
+plt.ylabel("Student Marks")
+plt.title("Polynomial")
+plt.legend()
+plt.grid(True)
+plt.show()
+
+
 
 '''maths solution: y=b0+b1x+b2x^2
 x=[1,2,3,4,5] y=[20,35,55,78,95]

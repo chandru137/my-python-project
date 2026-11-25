@@ -3,6 +3,13 @@ it's useful when:
 1-many input features. 2-multicollinearity(the features are highly related with each other). 3-when the model is overfitting.
 linear Regression-->fit the data-->Ridge regression-->fit the data-->control large coefficients
 
+what is a penalty?
+A penalty is an extra mathematical cost added to the regression error when the model has large co-efficients.
+
+using of alpha:
+               small alpha-->weak penalty-->more complex model-->overfitting
+               large alpha-->strongh penalty-->simpe model-->underfitting-->co-efficient shrink
+
 Ridge Regression                               vs                   linear regression
 -adds coefficient penalty                       |                    -no coefficient penalty
 -helps to reduce overfitting                    |                    -overfitting is possible
@@ -11,27 +18,40 @@ Ridge Regression                               vs                   linear regre
 
 ridge regression formula:y=b0+b1x1+b2x2+......+bnxn+λ(b1^2+b2^2+......+bn^2)
 where λ is the regularization parameter that controls the amount of shrinkage applied to the coefficients.'''
+
+#this program automaticaly apply best alpha value by the model_selection
 from sklearn.linear_model import Ridge
-X=[[2,60,45],                                   #study hours,attendance,assignment marks
+from sklearn.model_selection import GridSearchCV
+X=[[2,60,45],                                             #study hours,attendance,assignment marks
    [3,70,50],                                  
    [4,75,60],
    [5,85,70],
    [6,90,80]
    ]
 Y=[50,58,68,78,88]                                 #final marks
-model=Ridge(alpha=1) #type:ignore
-model.fit(X,Y)#type:ignore
-p=int(input("Enter The Study Hours per day:"))
-q=int(input("Enter The Attendance:"))
-r=int(input("Enter The Assignment Marks:"))
+params={
+    "alpha":[0.001,0.01,0.1,1,10,100,100]          #alpha value to test
+}
+grid=GridSearchCV(                                 #automaticaly find the best alpha
+    Ridge(),
+    params,
+    cv=5,                                          #datasets have 5 students
+    scoring="neg_mean_squared_error"               #lowest average cross validation mse among the condition
+)
+grid.fit(X,Y)
+model=grid.best_estimator_
+p=int(input("Enter the study hours:"))
+q=int(input("Enter the attendance in percentage:"))
+r=int(input("Enter the assignment marks:"))
 if(p<=24 and q<=100 and r<=100):
-    z=model.predict([[p,q,r]]) #type:ignore
-    print("Predicted Marks:",z[0])
-    print("Intercept:",model.intercept_)
-    print("Coefficient:",model.coef_)
+ print("Best Alpha:",grid.best_params_["alpha"])
+ print("Best MSE:",-grid.best_score_)
+ print("Coefficients:",model.coef_)
+ print("Intercept:",model.intercept_)
+ prediction=model.predict([[p,q,r]])
+ print("Predication marks",prediction[0])
 else:
-    print("Invalid Input")
-   
+ print("Invailed Input:")
 
 '''
 study hours(x1)     attendance(x2)     assignment marks(x3)    final marks(y1)
@@ -180,3 +200,148 @@ the eqution becames:
 y=-36.3073+51.2293x1+2.8341x2+1.3951x3'''
 
 #NOTE:YOU CAN TAKE FROM THE USERS INPUT BY INPUT KEY AND FLOAT 
+
+
+'''
+ELASTIC NET REGRESSION:Elastic Net regression is a linear regression technique that combines both L1 (Lasso) 
+                       and L2 (Ridge) regularization penalties to shrink coefficients and perform feature selection
+                       '''
+
+from sklearn.linear_model import ElasticNet
+
+# 1. Create a tiny dataset (3 samples, 2 features)
+# Feature 1 and Feature 2 are highly correlated
+X = [[1, 1], [2, 2], [3, 3]]
+y = [2, 4, 6]
+
+# 2. Define the model with fixed hyperparameters
+# alpha = total penalty strength, l1_ratio = 50% Lasso / 50% Ridge
+model = ElasticNet(alpha=0.1, l1_ratio=0.5)
+
+# 3. Train the model
+model.fit(X, y)
+
+# 4. Predict the output for a new data point [4, 4]
+prediction = model.predict([[4, 4]])
+
+print(f"Prediction for: {prediction[0]:.2f}")
+print(f"Weights/Coefficients: {model.coef_}")
+print(f"Intercept: {model.intercept_:.2f}")
+'''
+The dataset is:
+
+Sample
+
+Feature 1 (1)  |Feature 2 (2) | Target
+
+1               |1              |2
+2               |2              |4
+3               |3              |6  
+
+New input
+4
+4
+?
+
+Parameters:
+a = 0.1,
+l1_ratio = 0.5
+
+
+2. Step 1: Understand the regression equation
+For two features, the regression equation is:y'=b0+b1x1+b2x2
+
+Where:
+bo = intercept
+b1 = coefficient of Feature 1
+b2 = coefficient of Feature 2
+X1, X2 = input features
+y' = predicted output
+We need to find bo, b1, b2.
+
+3. Step 2: Find the relationship between the features and target
+
+Our observations are:
+
+1+1=2
+
+2+2=4
+
+3+3=6
+
+Therefore, the target follows:
+Y=x1+x2
+Without regularization, one possible solution is:b1=1,b2=1, b0=0
+However, ElasticNet applies regularization, so its fitted coefficients will generally differ from these values.
+
+Also, the two features are perfectly correlated:
+X1 = X2 in every training sample. Consequently, the
+data alone cannot determine how to divide the
+coefficient between the two features.
+
+
+4. Step 3: Understand the ElasticNet mathematical formula
+ElasticNet minimizes the following objective:
+          n                    p                       p
+j=(1/2n) * Σ(y - y'i)^2 + αl * Σ|bj| + [ α(1 - l)/2] * Σ|bj^2|
+          i=1                  j=1                     j=1
+Where:
+n = 3: number of samples
+p = 2: number of features
+alpha = 0.1: regularization strength
+l=0.5: L1 ratio
+
+The first term measures prediction error.
+The second term is the Lasso penalty.
+The third term is the Ridge penalty.
+
+Substitute the parameter values:
+
+al = 0.1(0.5) = 0.05
+a(1-l)/2=0.1(1-0.5)/2= 0.025
+                                      3
+Thus, the objective becomes:j=(1/6) * Σ(y - y'i)^2 +0.05(|b1|+|b2|) + 0.025(b1^2+b2^2)
+                                      i=1
+Notice that the intercept is not penalized.
+Finding the coefficients
+
+Because the two features are identical, the optimal coefficients are equal:b1=b2=c
+The prediction equation becomes:y'=bo+2cx
+
+The target values are exactly twice the feature values.
+Therefore, the unregularized intercept is zero, and the residuals are zero when bo = 0 and c = 1.
+
+But ElasticNet penalizes large coefficients. Minimizing the objective gives:
+
+C=1/1 +0.1(1- 0.5) +0.1(0.5)
+
+Simplifying:
+
+C=1/1+ 0.05+ 0.05
+c≈ 0.90909
+
+Therefore, the theoretical coefficients are:
+
+And the intercept is:
+b₁ ≈ 0.90909
+b2 ≈ 0.90909
+b0=0
+And the intercept is:
+
+These results assume the standard scikit-learn
+ElasticNet objective, which does not standardize the
+features automatically.
+
+5. Step 4: Calculate the prediction
+Your new input is:
+x1 = 4, x2 =4
+
+Use the regression equation:
+        y'=b0+b1x1+b2x2
+Substitute the coefficients:
+y'= 0+ (0.90909)(4) + (0.90909)(4)
+
+Calculate each term:0.90909*4=3.63636
+y'=3.63636+3.63636
+y'=7.27273
+'''
